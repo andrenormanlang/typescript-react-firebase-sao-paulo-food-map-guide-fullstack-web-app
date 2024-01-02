@@ -1,0 +1,234 @@
+@import "bootstrap/scss/bootstrap";
+@import "react-toastify/scss/main";
+@import "toastify";
+@import "styles";
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Roboto:wght@300&display=swap');
+
+body {
+	font-family: $fontPrimary;
+	background-color: $darkerBlueBackground;
+	color: $primaryTextColor;
+}
+
+.caveat-brush-font {
+	font-family: 'Caveat Brush', cursive;
+}
+
+.roboto {
+	font-family: 'Poppins', sans-serif;
+	font-size: 0.9rem;
+}
+
+#App {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	position: relative;
+}
+
+.navbar {
+	padding-bottom: 0;
+	background-color: $primaryColor;
+	color: #fff;
+
+	.navbar-nav {
+		.nav-link {
+			color: #fff;
+		}
+	}
+}
+
+a {
+	text-decoration: none;
+	color: $primaryColor;
+
+	&:hover {
+		color: darken($primaryColor, 10%);
+	}
+}
+
+.search-box {
+	@media (max-width:576px) {
+		.searchbox-col:first-of-type {
+			margin-bottom: 0.5rem;
+		}
+	}
+
+	@media (max-width: 576px) {
+		max-width: 95%;
+
+		.searchbox-col {
+			// width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+		}
+
+		.searchbox-col:first-of-type {
+			margin-bottom: 0.5rem;
+		}
+
+		input,
+		button {
+			padding: 0.4rem;
+		}
+
+	}
+}
+
+.offcanvas,
+.places-sidebar {
+	overflow: scroll;
+	-ms-overflow-style: none;
+	/* IE and Edge */
+	scrollbar-width: none;
+	/* Firefox */
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.places-sidebar {
+	max-height: 100vh;
+	color: white;
+}
+
+.offcanvas-btn {
+	border-radius: 0 $borderRadius $borderRadius 0;
+	position: fixed;
+	left: 0;
+	top: 50vh;
+	padding: 0.4rem 1rem;
+	color: #fff;
+	font-size: 1.5rem;
+	z-index: 999;
+	background-color: $primaryColor;
+	cursor: pointer;
+
+	&:hover {
+		background-color: darken($primaryColor, 10%);
+	}
+}
+
+.card-links {
+	a {
+		text-decoration: none;
+		color: $primaryColor;
+
+		&:hover {
+			color: darken($primaryColor, 10%);
+		}
+	}
+
+}
+
+a.add-photo-links {
+	color: white;
+
+	&:hover {
+		color: $primaryColor;
+	}
+}
+
+.img-square {
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: $borderRadius;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.invalid-value {
+	font-size: smaller;
+	color: $dangerColor;
+}
+
+
+.btn {
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: $borderRadius;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+
+	&:hover {
+		background-color: darken($primaryColor, 10%);
+	}
+
+	&.btn-primary {
+		background-color: $primaryColor;
+		color: white;
+
+		&:hover {
+			background-color: darken($primaryColor, 10%);
+		}
+	}
+}
+
+input[type="*"],
+textarea {
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: $borderRadius;
+	font-family: $fontSecondary;
+	transition: border-color 0.3s ease;
+
+	&:focus {
+		border-color: $primaryColor;
+		outline: none;
+	}
+}
+
+.modal-content {
+	background-color: $darkerBlueBackground;
+	color: white;
+}
+
+.forgot-password {
+	color: white;
+}
+
+.account,
+.need-account {
+	color: #ffffff;
+	font-weight: bold;
+}
+
+
+.account {
+	&.sign-in {
+		color: #add8e6;
+	}
+
+	&.sign-up {
+		color: #add8e6;
+	}
+}
+
+// Global link style for improved contrast
+a.sign-in-link,
+a.sign-up-link {
+	color: #ffd700; // Yellow text color
+	font-weight: bold; // Make the text bold for better readability
+
+	&:hover {
+		color: #c5a526; // Slightly darker yellow color on hover
+	}
+}
+
+.title-table,
+.title {
+	color: #feb414;
+}
+
+.social-icons {
+	a {
+		text-decoration: none;
+		color: #feb414;
+		/* Set the initial color */
+
+		&:hover {
+			color: #ff9900;
+			/* Change to your desired hover color */
+		}
+	}
+}
