@@ -38,4 +38,6 @@ export const photosCol = createCollection<Photo>('photos')
 export const placesCol = createCollection<Place>('places')
 export const usersCol = createCollection<UserDoc>('users')
 
+
+
 export default app

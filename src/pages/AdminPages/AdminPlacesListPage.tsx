@@ -51,6 +51,7 @@ const AdminPlacesListPage = () => {
 			/>
 		</>
 	)
+	console.log('data', data)
 }
 
 export default AdminPlacesListPage

@@ -14,6 +14,8 @@ const useStreamCollection = <T>(
 	const getCollection = useCallback(() => {
 		const queryRef = query(colRef, ...queryConstraints)
 
+		console.log('queryRef: ', queryConstraints)	;
+
 		const unsubscribe = onSnapshot(
 			queryRef,
 			(snapshot) => {

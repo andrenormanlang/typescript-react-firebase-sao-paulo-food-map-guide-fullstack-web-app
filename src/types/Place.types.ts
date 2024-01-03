@@ -8,7 +8,7 @@ export type Location = {
 export type Place = {
 	_id: string
 	category: Category
-	city: string
+	// city: string
 	createdAt: Timestamp
 	description: string
 	email?: string

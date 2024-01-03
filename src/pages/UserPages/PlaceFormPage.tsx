@@ -171,7 +171,7 @@ const PlaceFormPage = () => {
 											(component) => {
 												if (component.types[0] !== 'postal_town') return
 
-												setValue('city', component.long_name)
+												// setValue('city', component.long_name)
 												const placeTypes = selectedPlace.types || []
 
 												if (!placeTypes.includes('street_address') && !placeTypes.includes('establishment')) {

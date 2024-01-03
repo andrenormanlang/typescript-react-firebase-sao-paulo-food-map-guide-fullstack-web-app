@@ -6,4 +6,5 @@ const useGetPlace = (id = '') => {
 	return useGetDocument<Place>(placesCol, id)
 }
 
+
 export default useGetPlace

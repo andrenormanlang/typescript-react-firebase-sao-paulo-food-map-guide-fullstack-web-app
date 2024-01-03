@@ -89,6 +89,8 @@ const AdminPlacesSortableTable = <TData, TValue>({
 
 	const altRendering = ['uid', 'createdAt', 'isApproved', '_id']
 
+
+
 	return (
 		<>
 			<Form.Control

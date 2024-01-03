@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import FormSelect from 'react-bootstrap/FormSelect'
 import { BiCurrentLocation as FaLocationArrow } from 'react-icons/bi'
-import PlacesAutoComplete from './PlacesAutoComplete'
+// import PlacesAutoComplete from './PlacesAutoComplete'
 import { SelectCategory, SelectSupply, } from '../../../types/Place.types'
 
 type Props = {
@@ -22,7 +22,7 @@ const supplyArr: SelectSupply[] = ['Supply', 'General Menu', 'Lunch', 'After Wor
 
 const SearchBox: React.FC<Props> = ({
 	handleFindLocation,
-	passOnResults,
+	// passOnResults,
 	passCategoryFilter,
 	passSupplyFilter,
 	categoryFilter,
@@ -34,20 +34,20 @@ const SearchBox: React.FC<Props> = ({
 			style={{
 				position: 'relative',
 				top: '3rem',
-				maxWidth: '40rem',
+				maxWidth: '30rem',
 				background: 'white',
 				padding: '0.5rem',
 				boxShadow: '8px 8px 5px rgba(0, 0, 0, 0.56)'
 			}}>
 			<Row className='d-flex align-items-center justify-content-center rounded'>
-				<Col xs={12} sm={4} className='searchbox-col'>
+				{/* <Col xs={12} sm={4} className='searchbox-col'>
 					<PlacesAutoComplete
 						placeHolderText={'Search location'}
 						onClickedPlace={(results) => passOnResults(results)}
 						searchPlacesOfTypes={['postal_town']}
 					/>
-				</Col>
-				<Col xs={5} sm={3} className='searchbox-col'>
+				</Col> */}
+				<Col xs={5} sm={4} className='searchbox-col'>
 					<FormSelect
 						id='filter-categoty'
 						name='select'
@@ -66,7 +66,7 @@ const SearchBox: React.FC<Props> = ({
 
 					</FormSelect>
 				</Col>
-				<Col xs={5} sm={3} className='searchbox-col'>
+				<Col xs={5} sm={4} className='searchbox-col'>
 					<FormSelect
 						id='filter-supply'
 						name='select'

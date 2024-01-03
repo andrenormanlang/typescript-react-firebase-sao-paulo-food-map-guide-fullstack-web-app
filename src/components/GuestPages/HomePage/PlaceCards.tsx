@@ -23,6 +23,9 @@ const PlaceCards: React.FC<Props> = ({ place }) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [place])
 
+
+	console.log('place', place)
+
 	return (
 		<Card className="mb-3">
 			<Card.Body>
