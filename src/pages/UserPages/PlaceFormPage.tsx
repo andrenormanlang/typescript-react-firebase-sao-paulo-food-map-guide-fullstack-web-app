@@ -1,6 +1,6 @@
 import PlacesAutoComplete from "../../components/GuestPages/HomePage/PlacesAutoComplete";
 import { FirebaseError } from "firebase/app";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -74,19 +74,20 @@ const PlaceFormPage = () => {
 				return;
 			}
 
-			const docRef = doc(placesCol, data._id);
-			const checkDoc = await getDoc(docRef);
-			if (checkDoc.exists()) {
+			if (!data._id) {
 				setIsError(true);
-				setErrorMessage("Place already exists");
+				setErrorMessage("Please select a valid place");
 				setIsSubmitting(false);
 				return;
 			}
 
+			const docRef = doc(placesCol, data._id);
+
 			const newPlace = {
 				...data,
 				createdAt: serverTimestamp(),
-				isApproved: signedInUserDoc && signedInUserDoc.isAdmin,
+				// Always create as a suggestion to match common Firestore rules
+				isApproved: false,
 				uid: signedInUser.uid,
 			};
 
@@ -105,7 +106,13 @@ const PlaceFormPage = () => {
 			setIsSubmitting(false);
 		} catch (error) {
 			if (error instanceof FirebaseError) {
-				setErrorMessage(error.message);
+				if (error.code === "permission-denied") {
+					setErrorMessage(
+						"Missing or insufficient permissions. Your Firestore security rules are blocking writes to the 'places' collection for this user."
+					);
+				} else {
+					setErrorMessage(error.message);
+				}
 			} else {
 				setErrorMessage("An error occurred while adding the place");
 			}
