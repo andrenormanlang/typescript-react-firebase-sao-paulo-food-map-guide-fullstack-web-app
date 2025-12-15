@@ -32,6 +32,9 @@ export type NominatimReverseResult = {
 
 const NOMINATIM_BASE_URL = "https://nominatim.openstreetmap.org";
 
+const DEFAULT_COUNTRY_CODES = ["br", "se", "dk"];
+const DEFAULT_ACCEPT_LANGUAGE = "pt-BR,en";
+
 const toLatLngLiteral = (
 	lat: string | number,
 	lon: string | number
@@ -41,15 +44,25 @@ const toLatLngLiteral = (
 });
 
 export const nominatimSearch = async (
-	query: string
+	query: string,
+	options?: {
+		countryCodes?: string[];
+		acceptLanguage?: string;
+	}
 ): Promise<NominatimSearchResult[]> => {
 	const url = new URL(`${NOMINATIM_BASE_URL}/search`);
 	url.searchParams.set("format", "jsonv2");
 	url.searchParams.set("q", query);
 	url.searchParams.set("addressdetails", "1");
 	url.searchParams.set("limit", "10");
-	url.searchParams.set("countrycodes", "br");
-	url.searchParams.set("accept-language", "pt-BR");
+	url.searchParams.set(
+		"countrycodes",
+		(options?.countryCodes ?? DEFAULT_COUNTRY_CODES).join(",")
+	);
+	url.searchParams.set(
+		"accept-language",
+		options?.acceptLanguage ?? DEFAULT_ACCEPT_LANGUAGE
+	);
 
 	const response = await fetch(url.toString(), {
 		headers: {

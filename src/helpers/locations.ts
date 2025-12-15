@@ -189,13 +189,36 @@ export const formatStreetAddress = (
 ) => {
 	if (!streetAddress) return "";
 
-	// Prefer Brazilian-style formatting when the string looks like a Nominatim display_name.
+	// Prefer Brazilian-style formatting only when it looks like a BR address.
 	if (streetAddress.includes(",")) {
-		const formatted = buildBrazilianStyleAddressFromDisplayName(
-			streetAddress,
-			options
-		);
-		return formatted || streetAddress;
+		const looksBrazilian =
+			/\b\d{5}-\d{3}\b/.test(streetAddress) ||
+			/\b(brasil|brazil)\b/i.test(streetAddress) ||
+			Object.keys(BR_STATE_ABBREV).some((state) =>
+				streetAddress.includes(state)
+			);
+
+		if (looksBrazilian) {
+			const formatted = buildBrazilianStyleAddressFromDisplayName(
+				streetAddress,
+				options
+			);
+			return formatted || streetAddress;
+		}
+
+		// Generic fallback for non-BR addresses (keeps it short but still informative)
+		const parts = streetAddress
+			.split(",")
+			.map((p) => p.trim())
+			.filter(Boolean);
+
+		if (parts.length <= 4) return streetAddress;
+		return [
+			parts[0],
+			parts[1],
+			parts[parts.length - 2],
+			parts[parts.length - 1],
+		].join(", ");
 	}
 
 	return streetAddress;

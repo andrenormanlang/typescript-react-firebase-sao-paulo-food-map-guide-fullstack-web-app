@@ -3,7 +3,7 @@ import { Form, ListGroup, ListGroupItem } from "react-bootstrap";
 import useOnclickOutside from "react-cool-onclickoutside";
 import { useSearchParams } from "react-router-dom";
 import {
-	nominatimSearchInSaoPaulo,
+	nominatimSearch,
 	type NominatimSearchResult,
 } from "../../../services/nominatim";
 
@@ -38,7 +38,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 		clearSuggestions();
 		setShowUl(false);
 		if (!showInitialPlace) {
-			setValue(locality + ", Brasil");
+			setValue(locality);
 		}
 	});
 
@@ -49,7 +49,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 
 	const filteredSuggestions = useMemo(() => {
 		if (!results.length) return [];
-		return results.filter((r) => r.display_name.includes("São Paulo"));
+		return results;
 	}, [results]);
 
 	const handleSelect = (result: NominatimSearchResult) => async () => {
@@ -66,7 +66,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 	useEffect(() => {
 		setShowUl(false);
 		if (!showInitialPlace) {
-			setValue(locality + ", Brasil");
+			setValue(locality);
 		}
 	}, [setValue, locality, showInitialPlace]);
 
@@ -85,7 +85,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 
 		const timer = window.setTimeout(async () => {
 			try {
-				const nextResults = await nominatimSearchInSaoPaulo(query);
+				const nextResults = await nominatimSearch(query);
 				setResults(nextResults);
 				setStatus(nextResults.length ? "OK" : "IDLE");
 			} catch {
