@@ -21,7 +21,7 @@ import { Place } from "../../../types/Place.types";
 import { getIconForCategory } from "../../../helpers/icons";
 import DirectionIcon from "./DirectionIcon";
 
-import { formatStreetAddress } from "../../../helpers/locations";
+import { formatPlaceAddress } from "../../../helpers/locations";
 interface IProps {
 	onClose: () => void;
 	place: Place;
@@ -87,9 +87,7 @@ const PlaceModal: React.FC<IProps> = ({ onClose, place, show }) => {
 					</span>
 				</div>
 				<div className="small text-muted my-1">
-					{formatStreetAddress(place.streetAddress, {
-						placeName: place.name,
-					})}
+					{formatPlaceAddress(place, { placeName: place.name })}
 				</div>
 
 				{photos &&

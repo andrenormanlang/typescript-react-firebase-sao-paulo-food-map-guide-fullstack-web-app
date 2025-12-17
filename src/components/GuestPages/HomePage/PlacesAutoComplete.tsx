@@ -13,6 +13,8 @@ type Props = {
 	searchPlacesOfTypes?: string[] | undefined;
 	placeHolderText: string;
 	showInitialPlace?: boolean;
+	locality?: string;
+	disabled?: boolean;
 };
 
 const PlacesAutoComplete: React.FC<Props> = ({
@@ -20,12 +22,16 @@ const PlacesAutoComplete: React.FC<Props> = ({
 	searchPlacesOfTypes,
 	placeHolderText,
 	showInitialPlace,
+	locality: localityProp,
+	disabled,
 }) => {
 	const [showUl, setShowUl] = useState<boolean>(false);
 	const [searchParams] = useSearchParams();
-	const locality = searchParams.get("locality") ?? "São Paulo";
+	const locality =
+		localityProp ?? searchParams.get("locality") ?? "São Paulo";
 
 	const [ready] = useState(true);
+	const isDisabled = Boolean(disabled) || !ready;
 	const [value, setValue] = useState("");
 	const [results, setResults] = useState<NominatimSearchResult[]>([]);
 	const [status, setStatus] = useState<"IDLE" | "OK" | "ERROR">("IDLE");
@@ -44,6 +50,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 	});
 
 	const handleInputClick = () => {
+		if (isDisabled) return;
 		setValue("");
 		setShowUl(true);
 	};
@@ -78,6 +85,11 @@ const PlacesAutoComplete: React.FC<Props> = ({
 
 	useEffect(() => {
 		const query = value.trim();
+		if (isDisabled) {
+			clearSuggestions();
+			setShowUl(false);
+			return;
+		}
 		if (!showUl) return;
 		if (query.length < 3) {
 			clearSuggestions();
@@ -137,7 +149,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 
 		return () => window.clearTimeout(timer);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [value, showUl]);
+	}, [value, showUl, isDisabled]);
 
 	return (
 		<div ref={ref}>
@@ -146,7 +158,7 @@ const PlacesAutoComplete: React.FC<Props> = ({
 				onClick={handleInputClick}
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
-				disabled={!ready}
+				disabled={isDisabled}
 				placeholder={placeHolderText}
 			/>
 			{status === "OK" && showUl && (

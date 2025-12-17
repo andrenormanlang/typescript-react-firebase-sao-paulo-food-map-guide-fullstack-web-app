@@ -2,7 +2,7 @@ import PlacesAutoComplete from "../../components/GuestPages/HomePage/PlacesAutoC
 import { FirebaseError } from "firebase/app";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import useAuth from "../../hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -13,13 +13,18 @@ import Row from "react-bootstrap/Row";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { placesCol } from "../../services/firebase";
-import { formatStreetAddress } from "../../helpers/locations";
-import { Category, Place, Supply } from "../../types/Place.types";
+import {
+	extractAddressPartsFromNominatim,
+	formatStreetAddress,
+} from "../../helpers/locations";
+import { Category, City, Place, Supply } from "../../types/Place.types";
 import type { LatLngLiteral } from "../../types/Geo.types";
 import {
 	getLatLngFromNominatim,
 	type NominatimSearchResult,
 } from "../../services/nominatim";
+
+const cities: City[] = ["Sao Paulo", "Malmö", "Copenhagen"];
 
 const categories: Category[] = [
 	"Café",
@@ -50,8 +55,17 @@ const PlaceFormPage = () => {
 		handleSubmit,
 		register,
 		setValue,
+		watch,
 		formState: { errors },
 	} = useForm<Place>();
+
+	const selectedCity = watch("city");
+	const hasSelectedCity = Boolean(selectedCity);
+
+	useEffect(() => {
+		// Ensure non-input fields set via setValue are included in submit payload.
+		register("location");
+	}, [register]);
 
 	const { signedInUser, signedInUserDoc } = useAuth();
 
@@ -60,6 +74,13 @@ const PlaceFormPage = () => {
 			setIsError(false);
 			setErrorMessage(null);
 			setIsSubmitting(true);
+
+			if (!data.city) {
+				setIsError(true);
+				setErrorMessage("Please select a city");
+				setIsSubmitting(false);
+				return;
+			}
 
 			if (!selectedPlace) {
 				setIsError(true);
@@ -139,24 +160,54 @@ const PlaceFormPage = () => {
 								<Alert variant="danger">{errorMessage}</Alert>
 							)}
 
-							<div className="mb-3">
-								{placeName && (
-									<h2 className="h6 mb-3">
-										Name: {placeName}
-									</h2>
-								)}
-								<PlacesAutoComplete
-									placeHolderText="Search place*"
-									showInitialPlace={true}
-									onClickedPlace={(
-										result: NominatimSearchResult,
-										name
-									) => {
-										if (!result) {
-											setIsError(true);
-											setErrorMessage(
-												"Please select a valid place"
-											);
+							<Form onSubmit={handleSubmit(onSubmit)}>
+								<input type="hidden" {...register("_id")} />
+								<input type="hidden" {...register("name")} />
+
+								<Form.Group className="mb-3" controlId="city">
+									<Form.Select
+										aria-label="Select city of the place"
+										className="form-select"
+										id="city"
+										{...register("city", {
+											required: "City missing",
+										})}
+									>
+										<option value="" defaultChecked>
+											Select City*
+										</option>
+										{cities.map((city) => (
+											<option key={city} value={city}>
+												{city}
+											</option>
+										))}
+									</Form.Select>
+									{errors.city && (
+										<Form.Text className="invalid-value">
+											{errors.city.message}
+										</Form.Text>
+									)}
+								</Form.Group>
+
+								<div className="mb-3">
+									<PlacesAutoComplete
+										placeHolderText={
+											hasSelectedCity
+												? "Search place*"
+												: "Choose a city first"
+										}
+										showInitialPlace={true}
+										disabled={!hasSelectedCity}
+										locality={selectedCity || undefined}
+										onClickedPlace={(
+											result: NominatimSearchResult,
+											name
+										) => {
+											if (!result) {
+												setIsError(true);
+												setErrorMessage(
+													"Please select a valid place"
+												);
 											return;
 										}
 
@@ -170,14 +221,33 @@ const PlaceFormPage = () => {
 										setValue("name", name);
 										setPlaceName(name);
 
-										const selectedAddress =
+										const addressParts =
+											extractAddressPartsFromNominatim(
+												result.address
+											);
+
+										const selectedStreetAddress =
+											addressParts.streetAddress?.trim() ||
 											formatStreetAddress(
 												result.display_name || "",
 												{ placeName: name }
 											);
+
 										setValue(
 											"streetAddress",
-											selectedAddress
+											selectedStreetAddress
+										);
+										setValue(
+											"addressNumber",
+											addressParts.addressNumber ?? ""
+										);
+										setValue(
+											"neighborhood",
+											addressParts.neighborhood ?? ""
+										);
+										setValue(
+											"zipCode",
+											addressParts.zipCode ?? ""
 										);
 
 										const { lat, lng } =
@@ -185,10 +255,14 @@ const PlaceFormPage = () => {
 										setSelectedPlace({ lat, lng });
 										setValue("location", { lat, lng });
 									}}
-								/>
-							</div>
+									/>
 
-							<Form onSubmit={handleSubmit(onSubmit)}>
+									{placeName && (
+										<h2 className="h6 mt-3 mb-0">
+											Name: {placeName}
+										</h2>
+									)}
+								</div>
 								<Form.Group
 									className="mb-3"
 									controlId="description"
@@ -221,6 +295,78 @@ const PlaceFormPage = () => {
 										Min: 10 characters, Max: 300 characters
 									</Form.Text>
 								</Form.Group>
+
+									<Form.Group
+										className="mb-3"
+										controlId="streetAddress"
+									>
+										<Form.Control
+											placeholder="Street Address*"
+											type="text"
+											{...register("streetAddress", {
+												required: "Street address missing",
+											})}
+										/>
+										{errors.streetAddress && (
+											<Form.Text className="invalid-value">
+												{errors.streetAddress.message}
+											</Form.Text>
+										)}
+									</Form.Group>
+
+									<Form.Group
+										className="mb-3"
+										controlId="addressNumber"
+									>
+										<Form.Control
+											placeholder="Address Number*"
+											type="text"
+											{...register("addressNumber", {
+												required: "Address number missing",
+											})}
+										/>
+										{errors.addressNumber && (
+											<Form.Text className="invalid-value">
+												{errors.addressNumber.message}
+											</Form.Text>
+										)}
+									</Form.Group>
+
+									<Form.Group
+										className="mb-3"
+										controlId="neighborhood"
+									>
+										<Form.Control
+											placeholder="Neighborhood*"
+											type="text"
+											{...register("neighborhood", {
+												required: "Neighborhood missing",
+											})}
+										/>
+										{errors.neighborhood && (
+											<Form.Text className="invalid-value">
+												{errors.neighborhood.message}
+											</Form.Text>
+										)}
+									</Form.Group>
+
+									<Form.Group
+										className="mb-3"
+										controlId="zipCode"
+									>
+										<Form.Control
+											placeholder="Zip Code*"
+											type="text"
+											{...register("zipCode", {
+												required: "Zip code missing",
+											})}
+										/>
+										{errors.zipCode && (
+											<Form.Text className="invalid-value">
+												{errors.zipCode.message}
+											</Form.Text>
+										)}
+									</Form.Group>
 
 								<Form.Group
 									className="mb-3"

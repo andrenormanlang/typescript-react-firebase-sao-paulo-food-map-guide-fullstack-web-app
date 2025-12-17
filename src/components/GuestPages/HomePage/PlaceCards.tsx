@@ -13,7 +13,7 @@ import { GoMail } from "react-icons/go";
 import { Link } from "react-router-dom";
 import { Place } from "../../../types/Place.types";
 import DirectionIcon from "./DirectionIcon";
-import { formatStreetAddress } from "../../../helpers/locations";
+import { formatPlaceAddress } from "../../../helpers/locations";
 
 type Props = {
 	place: Place;
@@ -52,9 +52,7 @@ const PlaceCards: React.FC<Props> = ({ place }) => {
 				</Card.Title>
 				<hr />
 				<Card.Subtitle className="mb-2 text-muted">
-					{formatStreetAddress(place.streetAddress, {
-						placeName: place.name,
-					})}
+					{formatPlaceAddress(place, { placeName: place.name })}
 				</Card.Subtitle>
 				<Card.Text className="roboto">{place.description}</Card.Text>
 

@@ -223,3 +223,92 @@ export const formatStreetAddress = (
 
 	return streetAddress;
 };
+
+export type NominatimAddressParts = {
+	streetAddress?: string;
+	addressNumber?: string;
+	neighborhood?: string;
+	city?: string;
+	zipCode?: string;
+};
+
+export const extractAddressPartsFromNominatim = (
+	address?: Record<string, string>
+): NominatimAddressParts => {
+	if (!address) return {};
+
+	const streetAddress =
+		address.road ??
+		address.pedestrian ??
+		address.footway ??
+		address.path ??
+		address.residential ??
+		address.cycleway ??
+		address.street ??
+		address.highway;
+
+	const addressNumber = address.house_number;
+
+	const neighborhood =
+		address.neighbourhood ??
+		(address as Record<string, string>).neighborhood ??
+		address.suburb ??
+		address.quarter ??
+		address.city_district;
+
+	const city =
+		address.city ??
+		address.town ??
+		address.village ??
+		address.municipality ??
+		address.county;
+
+	const zipCode = address.postcode;
+
+	return {
+		streetAddress,
+		addressNumber,
+		neighborhood,
+		city,
+		zipCode,
+	};
+};
+
+export const formatPlaceAddress = (
+	place: {
+		streetAddress?: string | null;
+		addressNumber?: string | null;
+		neighborhood?: string | null;
+		city?: string | null;
+		zipCode?: string | null;
+		name?: string | null;
+	},
+	options?: FormatStreetAddressOptions
+) => {
+	const street = (place.streetAddress ?? "").trim();
+	const number = (place.addressNumber ?? "").trim();
+	const neighborhood = (place.neighborhood ?? "").trim();
+	const city = (place.city ?? "").trim();
+	const zip = (place.zipCode ?? "").trim();
+
+	const hasParts = Boolean(number || neighborhood || city || zip);
+
+	if (street && hasParts) {
+		// Order requested: Street Address, Address Number, Neighborhood, City, Zip Code
+		const streetLine = number ? `${street} ${number}` : street;
+		return [
+			streetLine,
+			neighborhood ? `- ${neighborhood}` : undefined,
+			city ? `, ${city}` : undefined,
+			zip ? `, ${zip}` : undefined,
+		]
+			.filter(Boolean)
+			.join(" ")
+			.replace(/\s+,/g, ",")
+			.trim();
+	}
+
+	return formatStreetAddress(place.streetAddress, {
+		placeName: place.name ?? options?.placeName,
+	});
+};

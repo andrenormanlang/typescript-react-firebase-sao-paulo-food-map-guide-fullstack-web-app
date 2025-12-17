@@ -14,7 +14,9 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { useNavigate, useParams } from 'react-router-dom'
 import { placesCol } from '../../services/firebase'
-import { Category, Place, Supply } from '../../types/Place.types'
+import { Category, City, Place, Supply } from '../../types/Place.types'
+
+const cities: City[] = ["Sao Paulo", "Malmö", "Copenhagen"];
 
 const categories: Category[] = [
 	'Café',
@@ -54,6 +56,7 @@ const AdminEditPlaceForm = () => {
 	useEffect(() => {
 		if (place.data) {
 			setValue('description', place.data.description)
+			setValue('city', place.data.city)
 			setValue('category', place.data.category)
 			setValue('supply', place.data.supply)
 			setValue('email', place.data.email)
@@ -155,6 +158,31 @@ const AdminEditPlaceForm = () => {
 										</Form.Text>
 									)}
 									<Form.Text>Min: 10 characters, Max: 300 characters</Form.Text>
+								</Form.Group>
+
+								<Form.Group className="mb-3" controlId="city">
+									<Form.Select
+										aria-label="Select city of the place"
+										className="form-select"
+										id="city"
+										{...register("city", {
+											required: "City missing",
+										})}
+									>
+										<option value="" defaultChecked>
+											Select City*
+										</option>
+										{cities.map((city) => (
+											<option key={city} value={city}>
+												{city}
+											</option>
+										))}
+									</Form.Select>
+									{errors.city && (
+										<Form.Text className="invalid-value">
+											{errors.city.message}
+										</Form.Text>
+									)}
 								</Form.Group>
 
 								<Form.Group

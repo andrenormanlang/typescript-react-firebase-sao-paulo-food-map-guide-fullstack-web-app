@@ -9,7 +9,7 @@ export type Location = {
 export type Place = {
 	_id: string;
 	category: Category;
-	// city: string
+	city: City;
 	createdAt: Timestamp;
 	description: string;
 	email?: string;
@@ -18,7 +18,14 @@ export type Place = {
 	isApproved: boolean;
 	location: LatLngLiteral;
 	name: string;
+	/** Street name (not the full multi-part Nominatim display_name). */
 	streetAddress: string;
+	/** House / address number (can be alphanumeric). */
+	addressNumber?: string;
+	/** Neighborhood / district / suburb depending on country. */
+	neighborhood?: string;
+	/** Postal / ZIP code. */
+	zipCode?: string;
 	supply: Supply;
 	telephone?: string;
 	uid: string;
@@ -26,6 +33,8 @@ export type Place = {
 	distance?: number;
 	distanceText?: string;
 };
+
+export type City = "Sao Paulo" | "Malmö" | "Copenhagen";
 
 export type Category =
 	| "Café"
@@ -41,6 +50,8 @@ export type Supply =
 	| "After Work"
 	| "Dinner"
 	| "Breakfast/Brunch";
+
+export type SelectCity = City | "City";
 
 export type SelectCategory = Category | "Category";
 
