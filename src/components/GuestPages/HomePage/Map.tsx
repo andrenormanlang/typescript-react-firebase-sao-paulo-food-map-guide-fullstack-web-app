@@ -28,6 +28,36 @@ type Props = {
 
 const iconCache = new Map<string, L.Icon>();
 
+const normalizeLocalityKey = (value: string) => {
+	// Lowercase + best-effort diacritics removal for cross-locale matching.
+	// Note: some characters (e.g. "ø") are not always decomposed by NFD.
+	return value
+		.trim()
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/ø/g, "o")
+		.replace(/æ/g, "ae")
+		.replace(/å/g, "a");
+};
+
+const resolveSupportedLocality = (foundCity: string): string | null => {
+	const key = normalizeLocalityKey(foundCity);
+	if (!key) return null;
+
+	// Keep these values in sync with the city filter options.
+	if (key === "sao paulo" || key.includes("sao paulo")) return "Sao Paulo";
+	if (key === "malmo" || key.includes("malmo")) return "Malmö";
+	if (
+		key === "copenhagen" ||
+		key.includes("kobenhavn") ||
+		key.includes("kjobenhavn")
+	)
+		return "Copenhagen";
+
+	return null;
+};
+
 const getLeafletIcon = (url: string) => {
 	const cached = iconCache.get(url);
 	if (cached) return cached;
@@ -81,13 +111,22 @@ const HomeMap: React.FC<Props> = ({ placesFound }) => {
 		try {
 			const result = await nominatimReverse(position);
 			const foundCity = findAdressComponent(result);
+			const resolvedCity = foundCity
+				? resolveSupportedLocality(foundCity)
+				: null;
 			setCenter(position);
-			if (foundCity) {
+			if (resolvedCity) {
 				setSearchParams({
-					locality: foundCity,
+					locality: resolvedCity,
 					category,
 					supply,
 				});
+			} else if (foundCity) {
+				// Don’t wipe the current locality/places if reverse-geocoding returns
+				// a city that the app doesn’t have data for.
+				setErrorMsg(
+					`No places configured for “${foundCity}”. Keeping current city.`
+				);
 			}
 		} catch (error: unknown) {
 			setErrorMsg(
