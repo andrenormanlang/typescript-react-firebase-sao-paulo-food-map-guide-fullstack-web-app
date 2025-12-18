@@ -1,10 +1,16 @@
 # 🍔 Hangry Food Guide Map App
 
-![Map](./screens/hanger-1.png)
+![Map](./public/screens/hanger-1.png)
+*Map — Main view showing markers and sidebar*
 
-![Map of Other City selected](./screens/hanger-2.png)
+![Map of Other City selected](./public/screens/hanger-2.png)
+*Map 2 - Displaying other places of the selected city*
 
-![Detail of a Place](./screens/hanger-3.png)
+![Detail of a Place](./public/screens/hanger-3.png)
+*Detail of a place selected*  
+
+![Admin User Moderation](./public/screens/hanger-4.png)
+*Admin users may edit and approve the rendering of a place or not*
 
 An app that acts as a food guide for those moments when you're "hangry" 😤🍕 but don't know where to eat or just need some coffee/tea ☕.
 
